@@ -76,6 +76,7 @@ export default function TopNavigation({ userRole = 'manager', userName: propUser
   const managerLinks = [
     { href: '/manager/dashboard', label: 'Dashboard' },
     { href: '/manager/reviews', label: 'Reviews' },
+    { href: '/manager/coupons', label: 'Coupons' },
     { href: '/manager/ai-summary', label: 'AI Summary' },
   ];
 
@@ -83,6 +84,7 @@ export default function TopNavigation({ userRole = 'manager', userName: propUser
     { href: '/admin/dashboard', label: 'Dashboard' },
     { href: '/admin/reviews', label: 'Reviews' },
     { href: '/admin/stations', label: 'Stations' },
+    { href: '/admin/coupons', label: 'Coupons' },
     { href: '/admin/managers', label: 'Managers' },
     { href: '/admin/campaigns', label: 'Campaigns' },
     { href: '/admin/ai-insights', label: 'AI Insights' },

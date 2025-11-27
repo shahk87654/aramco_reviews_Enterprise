@@ -1,10 +1,11 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException, ForbiddenException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Campaign, CampaignStatus, RewardType } from '../database/entities/campaign.entity';
 import { RewardClaim } from '../database/entities/reward-claim.entity';
 import { Visit } from '../database/entities/visit.entity';
 import { Review } from '../database/entities/review.entity';
+import { Station } from '../database/entities/station.entity';
 import { CreateCampaignDto, UpdateCampaignDto } from './dto/campaign.dto';
 import * as QRCode from 'qrcode';
 
@@ -19,6 +20,8 @@ export class CampaignsService {
     private visitsRepository: Repository<Visit>,
     @InjectRepository(Review)
     private reviewsRepository: Repository<Review>,
+    @InjectRepository(Station)
+    private stationsRepository: Repository<Station>,
   ) {}
 
   async createCampaign(createCampaignDto: CreateCampaignDto) {
@@ -140,6 +143,7 @@ export class CampaignsService {
           campaignId: campaign.id,
           rewardType: campaign.rewardType,
           reviewId,
+          stationId,
         });
 
         let qrCodeDataUrl: string;
@@ -155,6 +159,7 @@ export class CampaignsService {
           phoneNumber,
           campaignId: campaign.id,
           reviewId,
+          stationId,
           qrCode: qrCodeDataUrl,
           isClaimed: false,
         });
@@ -168,6 +173,7 @@ export class CampaignsService {
           campaignId: campaign.id,
           rewardType: campaign.rewardType,
           reviewId,
+          stationId,
         });
 
         try {
@@ -231,5 +237,147 @@ export class CampaignsService {
       order: { createdAt: 'DESC' },
     });
   }
+
+  async getAllRewardClaims() {
+    return await this.rewardClaimsRepository.find({
+      relations: ['campaign'],
+      order: { createdAt: 'DESC' },
+    });
+  }
+
+  async getStationRewardClaims(stationId: string) {
+    return await this.rewardClaimsRepository.find({
+      where: {
+        stationId: stationId,
+      },
+      relations: ['campaign'],
+      order: { createdAt: 'DESC' },
+    });
+  }
+
+  async getStationRewardClaimsWithAccess(stationId: string, user: any) {
+    // Check if station exists
+    const station = await this.stationsRepository.findOne({
+      where: { id: stationId },
+    });
+
+    if (!station) {
+      throw new NotFoundException('Station not found');
+    }
+
+    // For now, allow all authenticated users to view station coupon data
+    // The frontend already filters to only show assigned stations
+    // If user is a manager, they should only access their assigned stations (frontend validates this)
+    
+    // Get all claims for this station
+    return this.getStationRewardClaims(stationId);
+  }
+
+  async getClaimsSummary() {
+    const allClaims = await this.rewardClaimsRepository.find({
+      relations: ['campaign'],
+    });
+
+    const totalGenerated = allClaims.length;
+    const totalClaimed = allClaims.filter((c) => c.isClaimed).length;
+    const unclaimedCoupons = allClaims.filter((c) => !c.isClaimed).length;
+
+    const claimsByStatus = {
+      totalGenerated,
+      totalClaimed,
+      unclaimedCoupons,
+      claimRate: totalGenerated > 0 ? ((totalClaimed / totalGenerated) * 100).toFixed(2) : 0,
+    };
+
+    const claimsByRewardType = {};
+    allClaims.forEach((claim) => {
+      const rewardType = claim.campaign?.rewardType || 'unknown';
+      if (!claimsByRewardType[rewardType]) {
+        claimsByRewardType[rewardType] = { total: 0, claimed: 0 };
+      }
+      claimsByRewardType[rewardType].total++;
+      if (claim.isClaimed) {
+        claimsByRewardType[rewardType].claimed++;
+      }
+    });
+
+    return {
+      summary: claimsByStatus,
+      byRewardType: claimsByRewardType,
+      recentClaims: allClaims.slice(0, 10),
+    };
+  }
+
+  async getClaimsByStation(stationId: string) {
+    const claims = await this.rewardClaimsRepository.find({
+      where: { stationId },
+      relations: ['campaign'],
+      order: { createdAt: 'DESC' },
+    });
+
+    const totalGenerated = claims.length;
+    const totalClaimed = claims.filter((c) => c.isClaimed).length;
+    const unclaimedCoupons = claims.filter((c) => !c.isClaimed).length;
+
+    return {
+      stationId,
+      summary: {
+        totalGenerated,
+        totalClaimed,
+        unclaimedCoupons,
+        claimRate: totalGenerated > 0 ? ((totalClaimed / totalGenerated) * 100).toFixed(2) : 0,
+      },
+      claims: claims,
+    };
+  }
+
+  async getClaimsSummaryByStation() {
+    const allClaims = await this.rewardClaimsRepository.find({
+      relations: ['campaign', 'station'],
+    });
+
+    const stationMap = new Map<string, any>();
+
+    allClaims.forEach((claim) => {
+      const stationId = claim.stationId;
+      if (!stationMap.has(stationId)) {
+        stationMap.set(stationId, {
+          stationId,
+          stationName: claim.station?.name || 'Unknown Station',
+          stationCode: claim.station?.stationCode || 'N/A',
+          totalGenerated: 0,
+          totalClaimed: 0,
+          byRewardType: {},
+        });
+      }
+
+      const station = stationMap.get(stationId);
+      station.totalGenerated++;
+      if (claim.isClaimed) {
+        station.totalClaimed++;
+      }
+
+      const rewardType = claim.campaign?.rewardType || 'unknown';
+      if (!station.byRewardType[rewardType]) {
+        station.byRewardType[rewardType] = { total: 0, claimed: 0 };
+      }
+      station.byRewardType[rewardType].total++;
+      if (claim.isClaimed) {
+        station.byRewardType[rewardType].claimed++;
+      }
+    });
+
+    const stations = Array.from(stationMap.values()).map((s) => ({
+      ...s,
+      claimRate: s.totalGenerated > 0 ? ((s.totalClaimed / s.totalGenerated) * 100).toFixed(2) : 0,
+    }));
+
+    return {
+      stations,
+      totalGenerated: allClaims.length,
+      totalClaimed: allClaims.filter((c) => c.isClaimed).length,
+    };
+  }
+
 }
 

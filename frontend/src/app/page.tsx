@@ -37,7 +37,13 @@ export default function HomePage() {
         }
         
         const data = await response.json();
-        setStations(data);
+        // Sort stations by stationCode in ascending order (1, 2, 3...)
+        const sortedStations = data.sort((a: Station, b: Station) => {
+          const codeA = parseInt(a.stationCode.replace(/\D/g, '')) || 0;
+          const codeB = parseInt(b.stationCode.replace(/\D/g, '')) || 0;
+          return codeA - codeB;
+        });
+        setStations(sortedStations);
       } catch (err: any) {
         const errorMessage = err.message || 'Failed to load stations. Please ensure the backend is running on http://localhost:3000';
         setError(errorMessage);

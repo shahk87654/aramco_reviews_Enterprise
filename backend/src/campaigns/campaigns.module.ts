@@ -6,9 +6,10 @@ import { Campaign } from '../database/entities/campaign.entity';
 import { RewardClaim } from '../database/entities/reward-claim.entity';
 import { Visit } from '../database/entities/visit.entity';
 import { Review } from '../database/entities/review.entity';
+import { Station } from '../database/entities/station.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Campaign, RewardClaim, Visit, Review])],
+  imports: [TypeOrmModule.forFeature([Campaign, RewardClaim, Visit, Review, Station])],
   controllers: [CampaignsController],
   providers: [CampaignsService],
   exports: [CampaignsService],

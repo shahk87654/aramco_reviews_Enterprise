@@ -10,6 +10,8 @@ import { StationsModule } from '@stations/stations.module';
 import { AnalyticsModule } from '@analytics/analytics.module';
 import { AlertsModule } from '@alerts/alerts.module';
 import { CampaignsModule } from './campaigns/campaigns.module';
+import { EmailModule } from './email/email.module';
+import { AiAnalysisModule } from './ai-analysis/ai-analysis.module';
 import {
   Station,
   User,
@@ -59,6 +61,8 @@ import {
     AnalyticsModule,
     AlertsModule,
     CampaignsModule,
+    EmailModule,
+    AiAnalysisModule,
   ],
   controllers: [AppController],
   providers: [AppService],

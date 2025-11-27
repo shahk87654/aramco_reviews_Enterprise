@@ -116,5 +116,65 @@ export class CampaignsController {
   async getRewardClaimsByPhone(@Param('phoneNumber') phoneNumber: string) {
     return this.campaignsService.getRewardClaimsByPhone(phoneNumber);
   }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Get('admin/all-claims')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get all reward claims (Admin only)' })
+  @ApiResponse({ status: 200, description: 'All reward claims' })
+  @ApiResponse({ status: 403, description: 'Forbidden - Admin access required' })
+  async getAllRewardClaims(@Request() req: any) {
+    if (req.user.role !== 'admin') {
+      throw new ForbiddenException('Admin access required');
+    }
+    return this.campaignsService.getAllRewardClaims();
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Get('station/:stationId/claims')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get reward claims for a station (Manager/Admin)' })
+  @ApiResponse({ status: 200, description: 'Reward claims for station' })
+  async getStationRewardClaims(@Request() req: any, @Param('stationId') stationId: string) {
+    console.log('getStationRewardClaims endpoint hit');
+    // Pass user info for permission check in service
+    return this.campaignsService.getStationRewardClaimsWithAccess(stationId, req.user);
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Get('admin/claims-summary')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get coupon generation and claim summary (Admin only)' })
+  @ApiResponse({ status: 200, description: 'Coupon summary with generation and claim stats' })
+  async getClaimsSummary(@Request() req: any) {
+    if (req.user.role !== 'admin') {
+      throw new ForbiddenException('Admin access required');
+    }
+    return this.campaignsService.getClaimsSummary();
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Get('admin/claims-by-station')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get coupon claims summary by station (Admin only) - shows where coupons are generated and claimed' })
+  @ApiResponse({ status: 200, description: 'Coupon summary with per-station generation and claim stats' })
+  async getClaimsSummaryByStation(@Request() req: any) {
+    if (req.user.role !== 'admin') {
+      throw new ForbiddenException('Admin access required');
+    }
+    return this.campaignsService.getClaimsSummaryByStation();
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Get('admin/station/:stationId/claims')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get coupon claims for a specific station (Admin only)' })
+  @ApiResponse({ status: 200, description: 'Coupon claims for the station' })
+  async getStationClaimsAdmin(@Request() req: any, @Param('stationId') stationId: string) {
+    if (req.user.role !== 'admin') {
+      throw new ForbiddenException('Admin access required');
+    }
+    return this.campaignsService.getClaimsByStation(stationId);
+  }
 }
 

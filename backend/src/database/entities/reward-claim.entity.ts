@@ -8,9 +8,11 @@ import {
   Index,
 } from 'typeorm';
 import { Campaign } from './campaign.entity';
+import { Station } from './station.entity';
 
 @Entity('reward_claims')
 @Index(['phoneNumber', 'campaignId'])
+@Index(['stationId', 'isClaimed'])
 export class RewardClaim {
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -23,6 +25,12 @@ export class RewardClaim {
 
   @ManyToOne(() => Campaign, (campaign) => campaign.claims, { onDelete: 'CASCADE' })
   campaign: Campaign;
+
+  @Column({ type: 'uuid' })
+  stationId: string; // Station where review was submitted
+
+  @ManyToOne(() => Station, { onDelete: 'CASCADE' })
+  station: Station;
 
   @Column({ type: 'uuid', nullable: true })
   reviewId: string; // The review that triggered the reward

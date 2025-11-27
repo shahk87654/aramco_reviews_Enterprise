@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import TopNavigation from '@/components/TopNavigation';
 import Card from '@/components/Card';
+import CouponStats from '@/components/CouponStats';
 import { TrendingUp, AlertCircle, Smile, BarChart3 } from 'lucide-react';
 import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
@@ -374,6 +375,11 @@ export default function ManagerDashboardPage() {
         </div>
 
         {/* Recent Reviews */}
+        <Card className="mb-8">
+          <h2 className="text-lg font-bold text-gray-900 mb-6">Coupon/Reward Status</h2>
+          <CouponStats stationId={selectedStationId} />
+        </Card>
+
         <Card className="mb-8">
           <h2 className="text-lg font-bold text-gray-900 mb-6">Recent Reviews</h2>
           {reviews.length > 0 ? (
