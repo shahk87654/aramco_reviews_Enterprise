@@ -1,7 +1,7 @@
 'use client';
 
 import { ReactNode } from 'react';
-import TopNavigation from './TopNavigation';
+import TopNavigation from '../TopNavigation';
 
 interface LayoutProps {
   children: ReactNode;

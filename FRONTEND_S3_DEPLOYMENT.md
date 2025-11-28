@@ -59,10 +59,10 @@ ls -la .next/
 5. Click **Create bucket**
 
 ### Via AWS CLI
-
+-----------------------------------------------------------
 ```bash
 aws s3 mb s3://aramco-reviews-frontend-$(date +%s) --region us-east-1
-```
+```----------------------------------------------------
 
 ---
 
@@ -78,7 +78,7 @@ aws s3 mb s3://aramco-reviews-frontend-$(date +%s) --region us-east-1
 4. Click **Save changes**
 
 **Note the endpoint:** Format will be `http://bucket-name.s3-website-us-east-1.amazonaws.com`
-
+arn:aws:s3:::aramco-reviews-frontend
 ---
 
 ## Step 4: Update S3 Bucket Policy
@@ -106,7 +106,7 @@ aws s3 mb s3://aramco-reviews-frontend-$(date +%s) --region us-east-1
 5. Click **Save changes**
 
 ---
-
+-----------------------------------------------------------------------------------------------------------------------------------
 ## Step 5: Upload Frontend Build to S3
 
 ### Option A: Using AWS Console

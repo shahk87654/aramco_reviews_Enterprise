@@ -45,6 +45,8 @@ Configure the following settings:
 - Enable **Enhanced monitoring** (optional): Disable for cost savings
 - Enable **Performance Insights** (optional): Disable for cost savings
 
+
+
 ### 1.4 Create Database
 1. Review all settings
 2. Click **Create database**

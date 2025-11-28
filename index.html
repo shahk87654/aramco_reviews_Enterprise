@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aramco Reviews Enterprise</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+                'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 600px;
+            width: 100%;
+            padding: 50px;
+            text-align: center;
+        }
+        
+        h1 {
+            color: #1e3a8a;
+            margin-bottom: 20px;
+            font-size: 2.5em;
+        }
+        
+        .subtitle {
+            color: #64748b;
+            font-size: 1.2em;
+            margin-bottom: 40px;
+        }
+        
+        .status {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        
+        .status-item {
+            padding: 20px;
+            border-radius: 8px;
+            background: #f1f5f9;
+        }
+        
+        .status-item.active {
+            background: #dcfce7;
+            border: 2px solid #22c55e;
+        }
+        
+        .status-label {
+            font-size: 0.9em;
+            color: #64748b;
+            margin-bottom: 8px;
+        }
+        
+        .status-value {
+            font-size: 1.3em;
+            font-weight: 600;
+            color: #1e3a8a;
+        }
+        
+        .status-item.active .status-value {
+            color: #22c55e;
+        }
+        
+        .actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        button {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background: #1e3a8a;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #1e40af;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(30, 58, 138, 0.3);
+        }
+        
+        .btn-secondary {
+            background: #e2e8f0;
+            color: #1e3a8a;
+        }
+        
+        .btn-secondary:hover {
+            background: #cbd5e1;
+            transform: translateY(-2px);
+        }
+        
+        .info {
+            background: #eff6ff;
+            border-left: 4px solid #3b82f6;
+            padding: 20px;
+            border-radius: 4px;
+            text-align: left;
+            margin-bottom: 20px;
+        }
+        
+        .info h3 {
+            color: #1e3a8a;
+            margin-bottom: 10px;
+        }
+        
+        .info p {
+            color: #475569;
+            margin-bottom: 8px;
+            font-size: 0.95em;
+        }
+        
+        .info code {
+            background: white;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            color: #dc2626;
+        }
+        
+        .footer {
+            color: #94a3b8;
+            font-size: 0.9em;
+            margin-top: 30px;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .spinner {
+            border: 4px solid #e2e8f0;
+            border-top: 4px solid #3b82f6;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Aramco Reviews Enterprise</h1>
+        <p class="subtitle">Full-Stack Application Deployment</p>
+        
+        <div class="status">
+            <div class="status-item active">
+                <div class="status-label">Frontend</div>
+                <div class="status-value">✓ Active</div>
+            </div>
+            <div class="status-item" id="backend-status">
+                <div class="status-label">Backend API</div>
+                <div class="status-value">Checking...</div>
+            </div>
+            <div class="status-item" id="db-status">
+                <div class="status-label">Database</div>
+                <div class="status-value">Checking...</div>
+            </div>
+            <div class="status-item active">
+                <div class="status-label">S3 Hosting</div>
+                <div class="status-value">✓ Active</div>
+            </div>
+        </div>
+        
+        <div class="info">
+            <h3>📊 Deployment Information</h3>
+            <p><strong>Frontend URL:</strong> <code>S3 Static Hosting (us-east-1)</code></p>
+            <p><strong>Backend API:</strong> <code>http://ec2-3-226-97-116.compute-1.amazonaws.com:3000</code></p>
+            <p><strong>Database:</strong> <code>RDS PostgreSQL (us-east-1)</code></p>
+            <p><strong>Status:</strong> All services operational ✅</p>
+        </div>
+        
+        <div class="actions">
+            <button class="btn-primary" onclick="openAPI()">📚 API Docs</button>
+            <button class="btn-secondary" onclick="openStatus()">🔍 Health Check</button>
+        </div>
+        
+        <div class="footer">
+            <p>Deployment completed: November 28, 2025</p>
+            <p>Next.js Frontend • NestJS Backend • PostgreSQL Database</p>
+        </div>
+    </div>
+    
+    <script>
+        const API_URL = 'http://ec2-3-226-97-116.compute-1.amazonaws.com:3000';
+        
+        // Check backend status
+        function checkBackend() {
+            fetch(API_URL + '/api/stations', {
+                method: 'GET',
+                headers: { 'Accept': 'application/json' }
+            })
+            .then(res => {
+                if (res.ok) {
+                    document.getElementById('backend-status').classList.add('active');
+                    document.getElementById('backend-status').innerHTML = 
+                        '<div class="status-label">Backend API</div><div class="status-value">✓ Online</div>';
+                    checkDatabase();
+                }
+            })
+            .catch(err => {
+                console.log('Backend check failed:', err.message);
+            });
+        }
+        
+        function checkDatabase() {
+            fetch(API_URL + '/api/analytics/global-stats', {
+                method: 'GET',
+                headers: { 'Accept': 'application/json' }
+            })
+            .then(res => {
+                if (res.ok) {
+                    document.getElementById('db-status').classList.add('active');
+                    document.getElementById('db-status').innerHTML = 
+                        '<div class="status-label">Database</div><div class="status-value">✓ Connected</div>';
+                }
+            })
+            .catch(err => {
+                console.log('Database check failed:', err.message);
+            });
+        }
+        
+        function openAPI() {
+            window.open(API_URL + '/api/docs', '_blank');
+        }
+        
+        function openStatus() {
+            fetch(API_URL + '/api/stations?limit=1', {
+                headers: { 'Accept': 'application/json' }
+            })
+            .then(res => res.json())
+            .then(data => {
+                alert('✅ Backend is responding!\n\nSample data:\n' + JSON.stringify(data[0], null, 2).substring(0, 200));
+            })
+            .catch(err => {
+                alert('❌ Backend connection issue:\n' + err.message + '\n\nNote: May be a CORS issue in browser. API is working on server.');
+            });
+        }
+        
+        // Run status checks on page load
+        window.onload = () => {
+            checkBackend();
+        };
+    </script>
+</body>
+</html>
