@@ -1,0 +1,12 @@
+# For frontend if using Docker
+node_modules
+.next
+.git
+coverage
+.env
+*.log
+.DS_Store
+.gitignore
+.prettier*
+.eslint*
+README.md

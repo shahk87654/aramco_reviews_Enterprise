@@ -1,0 +1,12 @@
+node_modules
+.git
+.next
+dist
+coverage
+.env
+*.log
+.DS_Store
+.gitignore
+.prettier*
+.eslint*
+README.md
