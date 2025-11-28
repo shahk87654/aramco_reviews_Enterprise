@@ -1,4 +1,5 @@
-FROM node:18-alpine
+# Stage 1: Builder
+FROM node:18-alpine AS builder
 
 WORKDIR /app
 
@@ -13,4 +14,17 @@ COPY . .
 
 RUN npm run build
 
-CMD ["npm", "start"]
+# Stage 2: Runtime
+FROM node:18-alpine
+
+WORKDIR /app
+
+# Only install production dependencies
+COPY package*.json ./
+
+RUN npm install --omit=dev --legacy-peer-deps && npm cache clean --force
+
+# Copy only built code from builder
+COPY --from=builder /app/dist ./dist
+
+CMD ["node", "dist/index"]
