@@ -22,8 +22,8 @@ WORKDIR /app
 # Copy package files
 COPY package*.json ./
 
-# Copy ALL node_modules from builder stage with all dependencies installed
-COPY --from=builder /app/node_modules ./node_modules
+# Install dependencies fresh in runtime to ensure all modules are available
+RUN npm install --legacy-peer-deps && npm cache clean --force
 
 # Copy only built code from builder
 COPY --from=builder /app/dist ./dist
