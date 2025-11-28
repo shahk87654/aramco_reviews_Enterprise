@@ -1,0 +1,4 @@
+- [x] Add 'reflect-metadata' import to main.ts
+- [ ] Rebuild Docker image
+- [ ] Run the container
+- [ ] Test the health endpoint
