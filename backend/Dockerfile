@@ -19,10 +19,11 @@ FROM node:18-alpine
 
 WORKDIR /app
 
-# Install production dependencies with reflect-metadata
+# Copy package files
 COPY package*.json ./
 
-RUN npm install --production --legacy-peer-deps && npm cache clean --force
+# Copy node_modules from builder stage (ensures all dependencies including reflect-metadata are available)
+COPY --from=builder /app/node_modules ./node_modules
 
 # Copy only built code from builder
 COPY --from=builder /app/dist ./dist
