@@ -11,8 +11,13 @@ import {
   AlertConfiguration,
 } from './entities';
 
-// Default to postgres if DB_TYPE is not specified
-const isPostgres = process.env.DB_TYPE !== 'sqlite';
+// Use postgres if all required env vars are set, otherwise use SQLite
+const isPostgres = !!(
+  process.env.DB_HOST &&
+  process.env.DB_USERNAME &&
+  process.env.DB_PASSWORD &&
+  process.env.DB_NAME
+);
 
 const baseConfig: Partial<DataSourceOptions> = {
   synchronize: process.env.NODE_ENV !== 'production',
@@ -34,12 +39,13 @@ const baseConfig: Partial<DataSourceOptions> = {
 const dataSourceConfig: DataSourceOptions = isPostgres
   ? ({
       type: 'postgres',
-      host: process.env.DB_HOST || 'localhost',
+      host: process.env.DB_HOST,
       port: parseInt(process.env.DB_PORT || '5432'),
-      username: process.env.DB_USERNAME || 'postgres',
-      password: process.env.DB_PASSWORD || 'postgres',
-      database: process.env.DB_NAME || 'aramco_reviews',
+      username: process.env.DB_USERNAME,
+      password: process.env.DB_PASSWORD,
+      database: process.env.DB_NAME,
       ssl: process.env.DB_SSL === 'true',
+      connectTimeoutMS: 5000,
       ...baseConfig,
     } as DataSourceOptions)
   : ({
