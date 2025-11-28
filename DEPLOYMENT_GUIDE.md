@@ -27,18 +27,24 @@ AWS Free Tier includes 750 hours of EC2 t2.micro instances, 20 GB of EBS storage
 4. Configure security group: Allow SSH (port 22), HTTP (80), HTTPS (443), and your app ports (e.g., 3000 for backend).
 5. Launch and connect via SSH.
 
+**Your Instance Details:**
+- **Instance ID:** `i-0a0b975a200b52dcf`
+- **Public DNS:** `ec2-3-226-97-116.compute-1.amazonaws.com`
+- **SSH Key:** `aramco.pem`
+- **Connect Command:** `ssh -i "aramco.pem" ec2-user@ec2-3-226-97-116.compute-1.amazonaws.com`
+
 ### Step 3: Install Docker on EC2
-1. SSH into your EC2 instance.
+1. SSH into your EC2 instance using: `ssh -i "aramco.pem" ec2-user@ec2-3-226-97-116.compute-1.amazonaws.com`
 2. Update packages: `sudo yum update -y`
-3. Install Docker: `sudo amazon-linux-extras install docker`
+3. Install Docker: `sudo amazon-linux-extras install docker -y`
 4. Start Docker: `sudo service docker start`
 5. Add user to docker group: `sudo usermod -a -G docker ec2-user`
-6. Reconnect SSH.
+6. Reconnect SSH after step 5.
 
 ### Step 4: Clone Repository and Build Images
 1. Install Git: `sudo yum install git -y`
-2. Clone your repo: `git clone https://github.com/your-repo/aramco-reviews.git`
-3. Navigate to project: `cd aramco-reviews`
+2. Clone your repo: `git clone https://github.com/shahk87654/aramco_reviews_Enterprise.git`
+3. Navigate to project: `cd aramco_reviews_Enterprise`
 4. Build Docker images:
    - Backend: `docker build -f backend/Dockerfile -t backend ./backend`
    - Workers: `docker build -f workers/Dockerfile -t workers ./workers`
