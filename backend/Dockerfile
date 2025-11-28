@@ -5,23 +5,15 @@ WORKDIR /app
 # Install build dependencies
 RUN apk add --no-cache python3 make g++
 
-# Copy package files
-COPY package*.json ./
+# Copy everything except node_modules
+COPY package*.json tsconfig.json nest-cli.json ./
+COPY src ./src
 
-# Install all dependencies (including devDependencies for build)
-RUN npm install --legacy-peer-deps
+# Install all dependencies  
+RUN npm install --legacy-peer-deps && npm cache clean --force
 
-# Copy source
-COPY . .
-
-# Build TypeScript
+# Build application
 RUN npm run build
-
-# Remove dev dependencies to save space
-RUN npm prune --omit=dev
-
-# Remove unnecessary files
-RUN rm -rf src tsconfig.json jest.config.js nest-cli.json .eslintrc.js .prettierrc
 
 EXPOSE 3000
 
