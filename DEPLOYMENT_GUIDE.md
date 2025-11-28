@@ -50,38 +50,93 @@ AWS Free Tier includes 750 hours of EC2 t2.micro instances, 20 GB of EBS storage
    - Workers: `docker build -f workers/Dockerfile -t workers ./workers`
 
 ### Step 5: Set Up Free RDS Database (PostgreSQL)
-1. Go to RDS Dashboard > Create Database.
-2. Choose **PostgreSQL**, free tier (db.t2.micro).
-3. Set database name, username, password.
-4. Note the endpoint (host) and port.
-5. In EC2 security group, allow inbound from RDS (port 5432).
+
+**Detailed instructions:** See [RDS_SETUP.md](./RDS_SETUP.md) for comprehensive PostgreSQL setup guide.
+
+Quick summary:
+1. Go to [RDS Dashboard](https://console.aws.amazon.com/rds/) > Create Database
+2. Choose **PostgreSQL** with **Free tier** template
+3. Instance class: **db.t3.micro** (free tier)
+4. DB identifier: `aramco-reviews-db`
+5. Master username: `postgres`
+6. Master password: Set a strong password (save it!)
+7. Database name: `aramco_reviews_db`
+8. Storage: 20 GB (free tier limit)
+9. Connectivity: Default VPC, create security group `aramco-db-sg`
+10. Create database and wait 5-10 minutes for availability
+
+**After creation:**
+- Get the database endpoint from RDS Dashboard
+- Update EC2 security group to allow inbound PostgreSQL (port 5432) from EC2 instance
+- Test connection from EC2: `psql -h <endpoint> -U postgres -d aramco_reviews_db`
 
 ### Step 6: Run Backend and Workers on EC2
-1. Create a docker-compose.yml for local orchestration (since AWS free tier doesn't include ECS):
+
+1. SSH into your EC2 instance:
+   ```bash
+   ssh -i "aramco.pem" ec2-user@ec2-3-226-97-116.compute-1.amazonaws.com
+   cd /home/ec2-user/aramco_reviews_Enterprise
+   ```
+
+2. Create `docker-compose.yml` in the project root:
    ```yaml
    version: '3.8'
    services:
      backend:
        image: backend
+       container_name: aramco-backend
        ports:
          - "3000:3000"
        environment:
          - NODE_ENV=production
-         - DB_HOST=<RDS endpoint>
+         - DB_HOST=<your-rds-endpoint>
          - DB_PORT=5432
-         - DB_USERNAME=<username>
-         - DB_PASSWORD=<password>
-         - DB_NAME=<db name>
+         - DB_USERNAME=postgres
+         - DB_PASSWORD=<your-rds-password>
+         - DB_NAME=aramco_reviews_db
          - DB_SSL=true
-         # Add other env vars
+         - JWT_SECRET=<your-jwt-secret>
+         - REDIS_URL=redis://localhost:6379
+         # Add other environment variables as needed
+       restart: always
+       networks:
+         - aramco-network
+
      workers:
        image: workers
+       container_name: aramco-workers
        environment:
          - NODE_ENV=production
-         # Same DB env vars
+         - DB_HOST=<your-rds-endpoint>
+         - DB_PORT=5432
+         - DB_USERNAME=postgres
+         - DB_PASSWORD=<your-rds-password>
+         - DB_NAME=aramco_reviews_db
+         - DB_SSL=true
+       restart: always
+       networks:
+         - aramco-network
+
+   networks:
+     aramco-network:
+       driver: bridge
    ```
-2. Run: `docker-compose up -d`
-3. Check logs: `docker-compose logs`
+
+3. Replace placeholders:
+   - `<your-rds-endpoint>`: Your RDS database endpoint (from Step 5)
+   - `<your-rds-password>`: Your RDS master password
+   - `<your-jwt-secret>`: Generate a secure JWT secret
+
+4. Start the services:
+   ```bash
+   docker-compose up -d
+   ```
+
+5. Check logs:
+   ```bash
+   docker-compose logs -f backend
+   docker-compose logs -f workers
+   ```
 
 ### Step 7: Set Up Domain and SSL (Optional, Free with Route 53)
 1. Register a domain via Route 53 (first domain free for 1 year).
