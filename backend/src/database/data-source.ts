@@ -11,7 +11,8 @@ import {
   AlertConfiguration,
 } from './entities';
 
-const isPostgres = process.env.DB_TYPE === 'postgres';
+// Default to postgres if DB_TYPE is not specified
+const isPostgres = process.env.DB_TYPE !== 'sqlite';
 
 const baseConfig: Partial<DataSourceOptions> = {
   synchronize: process.env.NODE_ENV !== 'production',
