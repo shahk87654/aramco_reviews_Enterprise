@@ -1,32 +1,27 @@
-# Stage 1: Builder
-FROM node:18-alpine AS builder
+FROM node:18-alpine
 
 WORKDIR /app
 
 # Install build dependencies
 RUN apk add --no-cache python3 make g++
 
-COPY package*.json ./
-
-RUN npm install --legacy-peer-deps
-
-COPY . .
-
-RUN npm run build
-
-# Stage 2: Runtime
-FROM node:18-alpine
-
-WORKDIR /app
-
 # Copy package files
 COPY package*.json ./
 
-# Install dependencies fresh in runtime to ensure all modules are available
-RUN npm install --legacy-peer-deps && npm cache clean --force
+# Install all dependencies (including devDependencies for build)
+RUN npm install --legacy-peer-deps
 
-# Copy only built code from builder
-COPY --from=builder /app/dist ./dist
+# Copy source
+COPY . .
+
+# Build TypeScript
+RUN npm run build
+
+# Remove dev dependencies to save space
+RUN npm prune --omit=dev
+
+# Remove unnecessary files
+RUN rm -rf src tsconfig.json jest.config.js nest-cli.json .eslintrc.js .prettierrc
 
 EXPOSE 3000
 
