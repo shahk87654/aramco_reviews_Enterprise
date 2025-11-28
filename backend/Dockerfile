@@ -22,10 +22,7 @@ WORKDIR /app
 # Copy package files
 COPY package*.json ./
 
-# Install production dependencies only
-RUN npm install --only=production --legacy-peer-deps
-
-# Copy node_modules from builder stage (ensures all dependencies including reflect-metadata are available)
+# Copy ALL node_modules from builder stage with all dependencies installed
 COPY --from=builder /app/node_modules ./node_modules
 
 # Copy only built code from builder
