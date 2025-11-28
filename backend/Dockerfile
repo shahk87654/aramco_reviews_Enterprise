@@ -19,10 +19,10 @@ FROM node:18-alpine
 
 WORKDIR /app
 
-# Install ALL dependencies (reflect-metadata and rxjs are needed at runtime)
+# Install production dependencies with reflect-metadata
 COPY package*.json ./
 
-RUN npm install --legacy-peer-deps && npm cache clean --force
+RUN npm install --production --legacy-peer-deps && npm cache clean --force
 
 # Copy only built code from builder
 COPY --from=builder /app/dist ./dist
