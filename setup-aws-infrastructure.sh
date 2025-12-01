@@ -3,10 +3,10 @@
 # Run this after creating VPC and EC2 instances
 
 AWS_REGION="us-east-1"
-VPC_ID="vpc-12345678"
-BACKEND_SG_ID="sg-backend"
+VPC_ID="vpc-0f922cff9f0b598be"
+BACKEND_SG_ID="sg-01470590a821ad41f"
 ALB_SG_ID="sg-alb"
-RDS_SG_ID="sg-rds"
+RDS_SG_ID="default (sg-094bc9ef8677be442)"
 
 echo "🔐 Setting up AWS Security Groups and Load Balancer..."
 

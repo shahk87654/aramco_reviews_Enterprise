@@ -1,0 +1,11 @@
+ALB_SG=
+BACKEND_SG=
+ALB_ARN=
+ALB_DNS=
+TG_ARN=arn:aws:elasticloadbalancing:us-east-1:868433374871:targetgroup/aramco-backend-targets/ea2d02b5fbd1bca9
+TG_NAME=aramco-backend-targets
+LISTENER_ARN=
+SUBNET2=
+TEST_INSTANCE_ID=
+TEST_PRIVATE_IP=
+PEER_ID=
