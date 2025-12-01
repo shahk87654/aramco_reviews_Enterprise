@@ -20,7 +20,7 @@ export default function HomePage() {
   useEffect(() => {
     const fetchStations = async () => {
       try {
-        const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000';
+        const apiBase = "https://unstereotyped-presubsistent-madilynn.ngrok-free.dev";
         fetch(`${apiBase}/api/stations`)
           .then(res => res.json())
           .then(data => {
