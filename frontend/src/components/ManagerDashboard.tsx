@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import axios from 'axios';
+import axiosInstance from '@/lib/axiosConfig';
 import {
   BarChart,
   Bar,
@@ -61,13 +61,13 @@ export default function ManagerDashboard({ stationId }: { stationId: string }) {
       const token = localStorage.getItem('accessToken');
       try {
         const [statsRes, alertsRes, reviewsRes] = await Promise.all([
-          axios.get<ReviewStats>(`/api/stations/${stationId}/reviews/stats`, {
+          axiosInstance.get<ReviewStats>(`/api/stations/${stationId}/reviews/stats`, {
             headers: { Authorization: `Bearer ${token}` },
           }),
-          axios.get<AlertItem[]>(`/api/stations/${stationId}/alerts`, {
+          axiosInstance.get<AlertItem[]>(`/api/stations/${stationId}/alerts`, {
             headers: { Authorization: `Bearer ${token}` },
           }),
-          axios.get<PaginatedReviews>(`/api/stations/${stationId}/reviews?limit=10`, {
+          axiosInstance.get<PaginatedReviews>(`/api/stations/${stationId}/reviews?limit=10`, {
             headers: { Authorization: `Bearer ${token}` },
           }),
         ]);
@@ -93,7 +93,7 @@ export default function ManagerDashboard({ stationId }: { stationId: string }) {
     const token = localStorage.getItem('accessToken');
     try {
       if (action === 'acknowledge') {
-        await axios.patch(
+        await axiosInstance.patch(
           `/api/stations/${stationId}/alerts/${alertId}/acknowledge`,
           {},
           {
@@ -101,7 +101,7 @@ export default function ManagerDashboard({ stationId }: { stationId: string }) {
           }
         );
       } else {
-        await axios.patch(
+        await axiosInstance.patch(
           `/api/stations/${stationId}/alerts/${alertId}/resolve`,
           { resolutionNote },
           {
@@ -111,7 +111,7 @@ export default function ManagerDashboard({ stationId }: { stationId: string }) {
       }
 
       // Refresh alerts
-      const res = await axios.get<AlertItem[]>(`/api/stations/${stationId}/alerts`, {
+      const res = await axiosInstance.get<AlertItem[]>(`/api/stations/${stationId}/alerts`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setAlerts(res.data);
