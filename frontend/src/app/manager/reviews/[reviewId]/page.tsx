@@ -17,7 +17,7 @@ export default function ManagerReviewDetailPage({ params }: { params: { reviewId
       convenience: 4,
       safety: 5,
     },
-    feedback: 'Excellent service overall! The staff was very friendly and helpful. The facility was clean and well-maintained. Only minor issue is the convenience store could have more variety.',
+    feedback: 'Excellent services overall! The staff was very friendly and helpful. The facility was clean and well-maintained. Only minor issue is the convenience store could have more variety.',
     sentiment: 'positive' as const,
     submittedAt: '2024-01-15 14:30',
     photos: [
