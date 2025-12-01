@@ -1,15 +1,13 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 import TopNavigation from '@/components/TopNavigation';
 import Card from '@/components/Card';
 import { User, Mail, Shield, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 
 export default function AdminProfilePage() {
-  const router = useRouter();
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<{ name?: string; email?: string; role?: string } | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

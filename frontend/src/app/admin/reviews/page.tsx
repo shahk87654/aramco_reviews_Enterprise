@@ -13,7 +13,7 @@ interface Review {
   text: string;
   sentiment: string | null;
   createdAt: string;
-  media?: any[];
+  media?: unknown[];
 }
 
 interface Station {
@@ -41,11 +41,12 @@ export default function AdminReviewsPage() {
 
   useEffect(() => {
     fetchReviews();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filters]);
 
   const fetchStations = async () => {
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+      const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000';
       const baseUrl = apiUrl.replace(/\/api$/, '');
       
       const response = await fetch(`${baseUrl}/api/stations`, {
@@ -67,7 +68,7 @@ export default function AdminReviewsPage() {
   const fetchReviews = async () => {
     try {
       setLoading(true);
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+      const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000';
       const baseUrl = apiUrl.replace(/\/api$/, '');
       const token = localStorage.getItem('adminToken') || localStorage.getItem('managerToken');
 
@@ -94,10 +95,10 @@ export default function AdminReviewsPage() {
 
             if (response.ok) {
               const data = await response.json();
-              const stationReviews = (data.data || data).map((r: Review) => ({
-                ...r,
-                stationId: station.id,
-              }));
+            const stationReviews = (data.data || data).map((r: Review) => ({
+              ...r,
+              stationId: station.id,
+            }));
               allReviews.push(...stationReviews);
             }
           } catch (err) {
@@ -129,7 +130,6 @@ export default function AdminReviewsPage() {
       // Filter by date range
       let filtered = allReviews;
       if (filters.dateRange !== 'all') {
-        const now = new Date();
         const filterDate = new Date();
         
         if (filters.dateRange === 'today') {
@@ -182,7 +182,7 @@ export default function AdminReviewsPage() {
 
     try {
       setDeleting(reviewId);
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+      const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000';
       const baseUrl = apiUrl.replace(/\/api$/, '');
       const token = localStorage.getItem('adminToken') || localStorage.getItem('managerToken');
 
@@ -201,8 +201,8 @@ export default function AdminReviewsPage() {
 
       // Refresh reviews list
       fetchReviews();
-    } catch (err: any) {
-      alert(err.message || 'Failed to delete review');
+    } catch (err: unknown) {
+      alert(err instanceof Error ? err.message : 'Failed to delete review');
     } finally {
       setDeleting(null);
     }

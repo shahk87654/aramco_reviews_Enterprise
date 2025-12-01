@@ -4,8 +4,8 @@ import { useState, useEffect } from 'react';
 import TopNavigation from '@/components/TopNavigation';
 import Card from '@/components/Card';
 import CouponStats from '@/components/CouponStats';
-import { TrendingUp, AlertCircle, Smile, BarChart3 } from 'lucide-react';
-import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { AlertCircle, Smile, BarChart3 } from 'lucide-react';
+import { LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
 interface Station {
   id: string;
@@ -36,7 +36,7 @@ export default function ManagerDashboardPage() {
   const [selectedStationId, setSelectedStationId] = useState<string>('');
   const [stats, setStats] = useState<ReviewStats | null>(null);
   const [reviews, setReviews] = useState<Review[]>([]);
-  const [alerts, setAlerts] = useState<any[]>([]);
+  const [alerts, setAlerts] = useState<Record<string, unknown>[]>([]);
 
   useEffect(() => {
     fetchUserStations();
@@ -46,11 +46,12 @@ export default function ManagerDashboardPage() {
     if (selectedStationId) {
       fetchStationData();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedStationId]);
 
   const fetchUserStations = async () => {
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+      const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000';
       const baseUrl = apiUrl.replace(/\/api$/, '');
       const token = localStorage.getItem('managerToken') || localStorage.getItem('adminToken');
       const userStr = localStorage.getItem('user');
@@ -76,15 +77,16 @@ export default function ManagerDashboardPage() {
 
       const allStations = await response.json();
       // Filter stations where this user is the manager
-      const managedStations = allStations.filter((s: any) => s.managerId === user.id);
+      const managedStations = allStations.filter((s: Record<string, unknown>) => s.managerId === user.id);
       
       setStations(managedStations);
       
       if (managedStations.length > 0) {
         setSelectedStationId(managedStations[0].id);
       }
-    } catch (err: any) {
-      setError(err.message || 'Failed to load stations');
+    } catch (err: Error | unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to load stations';
+      setError(errorMessage || 'Failed to load stations');
     } finally {
       setLoading(false);
     }
@@ -94,7 +96,7 @@ export default function ManagerDashboardPage() {
     if (!selectedStationId) return;
 
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+      const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000';
       const baseUrl = apiUrl.replace(/\/api$/, '');
       const token = localStorage.getItem('managerToken') || localStorage.getItem('adminToken');
 
@@ -139,7 +141,7 @@ export default function ManagerDashboardPage() {
         const alertsData = await alertsResponse.json();
         setAlerts(alertsData.data || []);
       }
-    } catch (err: any) {
+    } catch (err: Error | unknown) {
       console.error('Error fetching station data:', err);
     }
   };

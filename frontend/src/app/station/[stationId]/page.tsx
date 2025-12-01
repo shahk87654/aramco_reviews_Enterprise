@@ -26,7 +26,7 @@ export default function StationLandingPage({ params }: StationLandingPageProps) 
   useEffect(() => {
     const fetchStation = async () => {
       try {
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+        const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000';
         const baseUrl = apiUrl.replace(/\/api$/, '');
         
         const response = await fetch(`${baseUrl}/api/stations/${params.stationId}`, {
@@ -68,7 +68,7 @@ export default function StationLandingPage({ params }: StationLandingPageProps) 
           rating,
           reviewCount,
         });
-      } catch (err: any) {
+      } catch (err: Error | unknown) {
         console.error('Error fetching station:', err);
       } finally {
         setLoading(false);

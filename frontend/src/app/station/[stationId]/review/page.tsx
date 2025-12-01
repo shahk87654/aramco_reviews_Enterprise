@@ -96,7 +96,7 @@ export default function ReviewFormPage({ params }: ReviewFormPageProps) {
           name: data.name,
           code: data.stationCode || '',
         });
-      } catch (err: any) {
+      } catch (err: Error | unknown) {
         console.error('Error fetching station:', err);
         setError('Failed to load station information');
       } finally {
@@ -216,9 +216,10 @@ export default function ReviewFormPage({ params }: ReviewFormPageProps) {
         // Redirect to success page
         router.push(`/station/${params.stationId}/success`);
       }
-    } catch (err: any) {
+    } catch (err: Error | unknown) {
       console.error('Error submitting review:', err);
-      setError(err.response?.data?.message || 'Failed to submit review. Please try again.');
+      const errorMessage = err instanceof Error ? err.message : 'Failed to submit review. Please try again.';
+      setError(errorMessage || 'Failed to submit review. Please try again.');
       setSubmitting(false);
     }
   };

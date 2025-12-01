@@ -27,16 +27,23 @@ async function bootstrap() {
   // CORS
   app.enableCors({
     origin: function(origin, callback) {
-      const allowedOrigins = (process.env.CORS_ORIGINS || 'http://localhost:3001,http://localhost:3000,https://unstereotyped-presubsistent-madilynn.ngrok-free.dev').split(',');
+      // Allow origins from environment variable (AWS CloudFront, S3, etc.)
+      const allowedOrigins = (
+        process.env.CORS_ORIGINS || 
+        'http://localhost:3001,http://localhost:3000'
+      ).split(',').map(o => o.trim());
+      
+      // Always allow requests without origin (internal requests, mobile apps)
       if (!origin || allowedOrigins.indexOf(origin) !== -1 || allowedOrigins.includes('*')) {
         callback(null, true);
       } else {
+        logger.warn(`CORS blocked request from origin: ${origin}`);
         callback(new Error('Not allowed by CORS'));
       }
     },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
   });
 
   // Validation with security enhancements

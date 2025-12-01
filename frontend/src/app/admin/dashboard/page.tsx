@@ -3,8 +3,8 @@
 import { useState, useEffect } from 'react';
 import TopNavigation from '@/components/TopNavigation';
 import Card from '@/components/Card';
-import { BarChart3, AlertCircle, TrendingUp, Globe } from 'lucide-react';
-import { LineChart, Line, BarChart, Bar, ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { BarChart3, AlertCircle, Globe } from 'lucide-react';
+import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
 interface GlobalStats {
   totalReviews: number;
@@ -24,7 +24,6 @@ interface StationLeaderboardItem {
 }
 
 export default function AdminDashboardPage() {
-  const [timeframe, setTimeframe] = useState('week');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [globalStats, setGlobalStats] = useState<GlobalStats>({
@@ -47,7 +46,7 @@ export default function AdminDashboardPage() {
     try {
       setLoading(true);
       setError('');
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+      const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000';
       const baseUrl = apiUrl.replace(/\/api$/, '');
       const token = localStorage.getItem('adminToken') || localStorage.getItem('managerToken');
 
@@ -86,12 +85,11 @@ export default function AdminDashboardPage() {
       setTrendData(trends);
       setRegionPerformance(regions);
       setCategoryPerformance(categories);
-    } catch (err: any) {
-      setError(err.message || 'Failed to load dashboard data');
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Failed to load dashboard data');
       console.error('Error fetching dashboard data:', err);
-    } finally {
-      setLoading(false);
     }
+    setLoading(false);
   };
 
   if (loading) {

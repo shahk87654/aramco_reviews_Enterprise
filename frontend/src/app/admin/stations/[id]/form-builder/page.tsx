@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import TopNavigation from '@/components/TopNavigation';
 import Card from '@/components/Card';
-import { Copy, Trash2, Eye, Save } from 'lucide-react';
+import { Eye, Save } from 'lucide-react';
 
 interface FormField {
   id: string;
@@ -13,7 +13,7 @@ interface FormField {
   options?: string[];
 }
 
-export default function FormBuilderPage({ params }: { params: { id: string } }) {
+export default function FormBuilderPage(): React.ReactElement {
   const [fields, setFields] = useState<FormField[]>([
     { id: '1', type: 'rating', label: 'Overall Experience', required: true },
     { id: '2', type: 'category-rating', label: 'Categories', required: true },

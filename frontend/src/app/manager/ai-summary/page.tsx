@@ -3,13 +3,12 @@
 import { useState, useEffect } from 'react';
 import TopNavigation from '@/components/TopNavigation';
 import Card from '@/components/Card';
-import { TrendingDown, TrendingUp, AlertCircle, Target } from 'lucide-react';
-import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { TrendingUp, Target } from 'lucide-react';
 
 export default function ManagerAISummaryPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [stationData, setStationData] = useState<any>(null);
+  const [stationData, setStationData] = useState<{ avgRating?: number; totalReviews?: number; positivePercentage?: number; [key: string]: unknown } | null>(null);
 
   useEffect(() => {
     const fetchStationData = async () => {
@@ -20,7 +19,7 @@ export default function ManagerAISummaryPage() {
           throw new Error('No station selected');
         }
 
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+        const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000';
         const baseUrl = apiUrl.replace(/\/api$/, '');
         
         const response = await fetch(`${baseUrl}/api/analytics/station/${stationId}`, {
@@ -108,7 +107,7 @@ export default function ManagerAISummaryPage() {
 
             <Card className="bg-blue-50 border-2 border-blue-200">
               <p className="text-blue-800 font-semibold text-center">
-                AI insights are generated from your station's actual review data. More reviews provide better analysis.
+                AI insights are generated from your station&rsquo;s actual review data. More reviews provide better analysis.
               </p>
             </Card>
           </>

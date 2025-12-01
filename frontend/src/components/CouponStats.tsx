@@ -56,7 +56,7 @@ export default function CouponStats({ stationId }: CouponStatsProps) {
         const claims = result.length > 0 ? result : [];
 
         const totalGenerated = claims.length;
-        const totalClaimed = claims.filter((c: any) => c.isClaimed).length;
+        const totalClaimed = claims.filter((c: Record<string, unknown>) => c.isClaimed).length;
         const unclaimedCoupons = totalGenerated - totalClaimed;
         const claimRate = totalGenerated > 0 ? ((totalClaimed / totalGenerated) * 100).toFixed(1) : '0';
 
@@ -68,9 +68,10 @@ export default function CouponStats({ stationId }: CouponStatsProps) {
         });
 
         setCouponClaims(claims);
-      } catch (err: any) {
+      } catch (err: Error | unknown) {
+        const errorMessage = err instanceof Error ? err.message : 'Unknown error';
         console.error('Error fetching coupon data:', err);
-        setError(err.message);
+        setError(errorMessage);
         setCouponData({
           totalGenerated: 0,
           totalClaimed: 0,

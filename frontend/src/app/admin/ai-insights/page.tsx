@@ -3,19 +3,24 @@
 import { useState, useEffect } from 'react';
 import TopNavigation from '@/components/TopNavigation';
 import Card from '@/components/Card';
-import { AlertTriangle, TrendingDown, Lightbulb, Target } from 'lucide-react';
-import { BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { AlertTriangle, Target } from 'lucide-react';
+
+interface AnalyticsData {
+  totalReviews?: number;
+  avgRating?: number;
+  totalStations?: number;
+}
 
 export default function AdminAIInsightsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [analyticsData, setAnalyticsData] = useState<any>(null);
+  const [analyticsData, setAnalyticsData] = useState<AnalyticsData | null>(null);
 
   useEffect(() => {
     const fetchAnalytics = async () => {
       try {
         const token = localStorage.getItem('token');
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+        const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000';
         const baseUrl = apiUrl.replace(/\/api$/, '');
         
         const response = await fetch(`${baseUrl}/api/analytics`, {

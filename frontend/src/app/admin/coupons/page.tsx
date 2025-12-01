@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import TopNavigation from '@/components/TopNavigation';
 import Card from '@/components/Card';
 import { Gift, MapPin, TrendingUp, CheckCircle, AlertCircle } from 'lucide-react';
@@ -21,22 +21,48 @@ interface CouponDashboardData {
   totalClaimed: number;
 }
 
+interface Claim {
+  id: string;
+  phoneNumber: string;
+  campaign?: { rewardType: string };
+  createdAt: string;
+  isClaimed: boolean;
+}
+
 export default function AdminCouponsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [data, setData] = useState<CouponDashboardData | null>(null);
   const [selectedStationId, setSelectedStationId] = useState<string | null>(null);
-  const [stationClaims, setStationClaims] = useState<any[]>([]);
+  const [stationClaims, setStationClaims] = useState<Claim[]>([]);
 
-  useEffect(() => {
-    fetchCouponData();
+  const fetchStationClaims = useCallback(async (stationId: string) => {
+    try {
+      const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000';
+      const baseUrl = apiUrl.replace(/\/api$/, '');
+      const token = localStorage.getItem('adminToken') || localStorage.getItem('managerToken');
+
+      const response = await fetch(`${baseUrl}/api/campaigns/admin/station/${stationId}/claims`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch station claims');
+      }
+
+      const result = await response.json();
+      setStationClaims(result.claims || []);
+    } catch (err: unknown) {
+      console.error('Error fetching station claims:', err);
+      setStationClaims([]);
+    }
   }, []);
 
-  const fetchCouponData = async () => {
+  const fetchCouponData = useCallback(async () => {
     try {
       setLoading(true);
       setError('');
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+      const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000';
       const baseUrl = apiUrl.replace(/\/api$/, '');
       const token = localStorage.getItem('adminToken') || localStorage.getItem('managerToken');
 
@@ -54,35 +80,17 @@ export default function AdminCouponsPage() {
         setSelectedStationId(result.stations[0].stationId);
         fetchStationClaims(result.stations[0].stationId);
       }
-    } catch (err: any) {
-      setError(err.message || 'Failed to load coupon data');
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Failed to load coupon data');
       console.error('Error fetching coupon data:', err);
     } finally {
       setLoading(false);
     }
-  };
+  }, [fetchStationClaims]);
 
-  const fetchStationClaims = async (stationId: string) => {
-    try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
-      const baseUrl = apiUrl.replace(/\/api$/, '');
-      const token = localStorage.getItem('adminToken') || localStorage.getItem('managerToken');
-
-      const response = await fetch(`${baseUrl}/api/campaigns/admin/station/${stationId}/claims`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to fetch station claims');
-      }
-
-      const result = await response.json();
-      setStationClaims(result.claims || []);
-    } catch (err: any) {
-      console.error('Error fetching station claims:', err);
-      setStationClaims([]);
-    }
-  };
+  useEffect(() => {
+    fetchCouponData();
+  }, [fetchCouponData]);
 
   const handleStationSelect = (stationId: string) => {
     setSelectedStationId(stationId);
@@ -257,7 +265,7 @@ export default function AdminCouponsPage() {
                 <div className="border-t pt-4">
                   <h3 className="font-semibold text-gray-900 mb-3">By Reward Type</h3>
                   <div className="space-y-2">
-                    {Object.entries(selectedStation.byRewardType).map(([type, stats]: [string, any]) => (
+                    {Object.entries(selectedStation.byRewardType).map(([type, stats]: [string, { total: number; claimed: number }]) => (
                       <div key={type} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                         <div>
                           <p className="text-sm font-semibold text-gray-900">{getRewardTypeLabel(type)}</p>
@@ -303,7 +311,7 @@ export default function AdminCouponsPage() {
                       <td className="py-3 px-3 text-gray-600">{claim.phoneNumber}</td>
                       <td className="py-3 px-3">
                         <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">
-                          {getRewardTypeLabel(claim.campaign?.rewardType)}
+                          {getRewardTypeLabel(claim.campaign?.rewardType || 'unknown')}
                         </span>
                       </td>
                       <td className="py-3 px-3 text-gray-600">

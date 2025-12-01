@@ -20,7 +20,7 @@ export default function ManagerLoginPage() {
     setLoading(true);
 
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+      const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000';
       // Remove /api from apiUrl if present, then add it back to avoid double /api
       const baseUrl = apiUrl.replace(/\/api$/, '');
       const response = await fetch(`${baseUrl}/api/auth/login`, {
@@ -47,8 +47,9 @@ export default function ManagerLoginPage() {
       localStorage.setItem('refreshToken', data.refreshToken);
       localStorage.setItem('user', JSON.stringify(data.user));
       router.push('/manager/dashboard');
-    } catch (err: any) {
-      setError(err.message || 'Login failed. Please try again.');
+    } catch (err: Error | unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Login failed. Please try again.';
+      setError(errorMessage || 'Login failed. Please try again.');
     } finally {
       setLoading(false);
     }

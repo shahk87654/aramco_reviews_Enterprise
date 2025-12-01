@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import TopNavigation from '@/components/TopNavigation';
 import Card from '@/components/Card';
-import { Gift, CheckCircle, AlertCircle, TrendingUp, MapPin, Copy } from 'lucide-react';
+import { Gift, CheckCircle, AlertCircle, TrendingUp, Copy } from 'lucide-react';
 
 interface RewardClaim {
   id: string;
@@ -52,12 +52,13 @@ export default function ManagerCouponsPage() {
     if (selectedStationId) {
       fetchStationCouponData();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedStationId]);
 
   const fetchManagedStations = async () => {
     try {
       setLoading(true);
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
+      const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000/api';
       const token = localStorage.getItem('managerToken') || localStorage.getItem('adminToken');
       const userStr = localStorage.getItem('user');
 
@@ -79,14 +80,15 @@ export default function ManagerCouponsPage() {
       }
 
       const allStations = await response.json();
-      const stations = allStations.filter((s: any) => s.managerId === user.id);
+      const stations = allStations.filter((s: Record<string, unknown>) => s.managerId === user.id);
 
       setManagedStations(stations);
       if (stations.length > 0) {
         setSelectedStationId(stations[0].id);
       }
-    } catch (err: any) {
-      setError(err.message || 'Failed to load stations');
+    } catch (err: Error | unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to load stations';
+      setError(errorMessage || 'Failed to load stations');
       console.error('Error:', err);
     } finally {
       setLoading(false);
@@ -97,7 +99,7 @@ export default function ManagerCouponsPage() {
     if (!selectedStationId) return;
 
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
+      const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000/api';
       const token = localStorage.getItem('managerToken') || localStorage.getItem('adminToken');
 
       if (!token) {
@@ -132,17 +134,18 @@ export default function ManagerCouponsPage() {
       }
 
       const totalGenerated = claims.length;
-      const totalClaimed = claims.filter((c: any) => c.isClaimed).length;
+      const totalClaimed = claims.filter((c: Record<string, unknown>) => c.isClaimed).length;
 
       const byRewardType: Record<string, { total: number; claimed: number }> = {};
-      claims.forEach((claim: any) => {
-        const type = claim.campaign?.rewardType || 'unknown';
-        if (!byRewardType[type]) {
-          byRewardType[type] = { total: 0, claimed: 0 };
+      claims.forEach((claim: Record<string, unknown>) => {
+        const campaign = claim.campaign as Record<string, unknown> | undefined;
+        const type = campaign?.rewardType || 'unknown';
+        if (!byRewardType[type as string]) {
+          byRewardType[type as string] = { total: 0, claimed: 0 };
         }
-        byRewardType[type].total++;
+        byRewardType[type as string].total++;
         if (claim.isClaimed) {
-          byRewardType[type].claimed++;
+          byRewardType[type as string].claimed++;
         }
       });
 
@@ -160,8 +163,8 @@ export default function ManagerCouponsPage() {
 
       setCouponClaims(claims);
       setError('');
-    } catch (err: any) {
-      const errorMessage = err.message || 'Failed to load coupon data. Please try again.';
+    } catch (err: Error | unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to load coupon data. Please try again.';
       setError(errorMessage);
       console.error('Error fetching coupon data:', err);
       setCouponClaims([]);

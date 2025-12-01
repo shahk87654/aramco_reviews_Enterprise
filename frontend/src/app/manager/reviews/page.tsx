@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import TopNavigation from '@/components/TopNavigation';
 import Card from '@/components/Card';
-import { Search, Eye, AlertCircle } from 'lucide-react';
+import { Search, Eye } from 'lucide-react';
 import Link from 'next/link';
 
 interface Review {
@@ -13,7 +13,7 @@ interface Review {
   sentiment: string | null;
   createdAt: string;
   stationId: string;
-  media?: any[];
+  media?: Record<string, unknown>[];
 }
 
 interface Station {
@@ -42,11 +42,12 @@ export default function ManagerReviewsPage() {
     if (selectedStationId) {
       fetchReviews();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedStationId, filters]);
 
   const fetchUserStations = async () => {
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+      const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000';
       const baseUrl = apiUrl.replace(/\/api$/, '');
       const token = localStorage.getItem('managerToken') || localStorage.getItem('adminToken');
       const userStr = localStorage.getItem('user');
@@ -70,14 +71,14 @@ export default function ManagerReviewsPage() {
       }
 
       const allStations = await response.json();
-      const managedStations = allStations.filter((s: any) => s.managerId === user.id);
+      const managedStations = allStations.filter((s: Record<string, unknown>) => s.managerId === user.id);
       
       setStations(managedStations);
       
       if (managedStations.length > 0) {
         setSelectedStationId(managedStations[0].id);
       }
-    } catch (err: any) {
+    } catch (err: Error | unknown) {
       console.error('Error fetching stations:', err);
     } finally {
       setLoading(false);
@@ -88,7 +89,7 @@ export default function ManagerReviewsPage() {
     if (!selectedStationId) return;
 
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+      const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000';
       const baseUrl = apiUrl.replace(/\/api$/, '');
       const token = localStorage.getItem('managerToken') || localStorage.getItem('adminToken');
 
@@ -119,7 +120,6 @@ export default function ManagerReviewsPage() {
 
       // Filter by date range
       if (filters.dateRange !== 'all') {
-        const now = new Date();
         const filterDate = new Date();
         
         if (filters.dateRange === 'today') {
@@ -144,7 +144,7 @@ export default function ManagerReviewsPage() {
       }
 
       setReviews(reviewsData);
-    } catch (err: any) {
+    } catch (err: Error | unknown) {
       console.error('Error fetching reviews:', err);
     }
   };

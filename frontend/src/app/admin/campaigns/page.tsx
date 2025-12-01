@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import TopNavigation from '@/components/TopNavigation';
 import Card from '@/components/Card';
-import { Plus, Search, X, Edit2, Trash2, Check } from 'lucide-react';
+import { Plus, Search, X, Trash2 } from 'lucide-react';
 
 interface Campaign {
   id: string;
@@ -41,7 +41,7 @@ export default function AdminCampaignsPage() {
   const fetchCampaigns = async () => {
     try {
       setLoading(true);
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+      const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000';
       const baseUrl = apiUrl.replace(/\/api$/, '');
       const token = localStorage.getItem('adminToken') || localStorage.getItem('managerToken');
 
@@ -59,8 +59,8 @@ export default function AdminCampaignsPage() {
 
       const data = await response.json();
       setCampaigns(data);
-    } catch (err: any) {
-      setError(err.message || 'Failed to load campaigns');
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Failed to load campaigns');
     } finally {
       setLoading(false);
     }
@@ -72,7 +72,7 @@ export default function AdminCampaignsPage() {
     setError('');
 
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+      const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000';
       const baseUrl = apiUrl.replace(/\/api$/, '');
       const token = localStorage.getItem('adminToken') || localStorage.getItem('managerToken');
 
@@ -105,8 +105,8 @@ export default function AdminCampaignsPage() {
         endDate: '',
       });
       setShowAddForm(false);
-    } catch (err: any) {
-      setError(err.message || 'Failed to create campaign');
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Failed to create campaign');
     } finally {
       setCreating(false);
     }
@@ -118,7 +118,7 @@ export default function AdminCampaignsPage() {
     }
 
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+      const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000';
       const baseUrl = apiUrl.replace(/\/api$/, '');
       const token = localStorage.getItem('adminToken') || localStorage.getItem('managerToken');
 
@@ -135,8 +135,8 @@ export default function AdminCampaignsPage() {
       }
 
       fetchCampaigns();
-    } catch (err: any) {
-      setError(err.message || 'Failed to delete campaign');
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Failed to delete campaign');
     }
   };
 
@@ -232,7 +232,7 @@ export default function AdminCampaignsPage() {
                   <label className="block text-sm font-semibold text-gray-700 mb-2">Reward Type</label>
                   <select
                     value={newCampaign.rewardType}
-                    onChange={(e) => setNewCampaign({ ...newCampaign, rewardType: e.target.value as any })}
+                    onChange={(e) => setNewCampaign({ ...newCampaign, rewardType: e.target.value as 'discount_10_percent' | 'free_tea' | 'free_coffee' })}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                     required
                   >

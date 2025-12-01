@@ -2,7 +2,7 @@
 
 import TopNavigation from '@/components/TopNavigation';
 import Card from '@/components/Card';
-import { Star, AlertCircle, TrendingUp, MessageSquare } from 'lucide-react';
+import { AlertCircle, TrendingUp, MessageSquare } from 'lucide-react';
 
 export default function ManagerReviewDetailPage({ params }: { params: { reviewId: string } }) {
   // Mock review data

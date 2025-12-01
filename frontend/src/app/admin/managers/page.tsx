@@ -49,7 +49,7 @@ export default function AdminManagersPage() {
   const fetchManagers = async () => {
     try {
       setLoading(true);
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+      const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000';
       const baseUrl = apiUrl.replace(/\/api$/, '');
       const token = localStorage.getItem('adminToken') || localStorage.getItem('managerToken');
 
@@ -66,15 +66,16 @@ export default function AdminManagersPage() {
       }
 
       const data = await response.json();
-      setManagers(data.map((m: any) => ({
+      setManagers(data.map((m: Record<string, unknown>) => ({
         id: m.id,
         name: m.name,
         email: m.email,
         stations: m.stations || [],
         status: m.isActive ? 'active' : 'inactive',
       })));
-    } catch (err: any) {
-      setError(err.message || 'Failed to load managers');
+    } catch (err: Error | unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to load managers';
+      setError(errorMessage || 'Failed to load managers');
     } finally {
       setLoading(false);
     }
@@ -82,7 +83,7 @@ export default function AdminManagersPage() {
 
   const fetchStations = async () => {
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+      const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000';
       const baseUrl = apiUrl.replace(/\/api$/, '');
       const response = await fetch(`${baseUrl}/api/stations`, {
         method: 'GET',
@@ -97,7 +98,7 @@ export default function AdminManagersPage() {
 
       const data = await response.json();
       setStations(data);
-    } catch (err: any) {
+    } catch (err: Error | unknown) {
       console.error('Error fetching stations:', err);
     }
   };
@@ -108,7 +109,7 @@ export default function AdminManagersPage() {
     setError('');
 
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+      const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000';
       const baseUrl = apiUrl.replace(/\/api$/, '');
       const token = localStorage.getItem('adminToken') || localStorage.getItem('managerToken');
 
@@ -129,10 +130,10 @@ export default function AdminManagersPage() {
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.message || 'Failed to create manager');
+        throw new Error((errorData as Record<string, unknown>).message as string || 'Failed to create manager');
       }
 
-      const data = await response.json();
+      await response.json();
       
       // Refresh managers list
       fetchManagers();
@@ -146,8 +147,9 @@ export default function AdminManagersPage() {
         selectedStationIds: [],
       });
       setShowAddForm(false);
-    } catch (err: any) {
-      setError(err.message || 'Failed to create manager');
+    } catch (err: Error | unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to create manager';
+      setError(errorMessage || 'Failed to create manager');
     } finally {
       setCreating(false);
     }
@@ -169,7 +171,7 @@ export default function AdminManagersPage() {
 
     try {
       setRemoving(managerId);
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+      const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000';
       const baseUrl = apiUrl.replace(/\/api$/, '');
       const token = localStorage.getItem('adminToken') || localStorage.getItem('managerToken');
 
@@ -183,13 +185,14 @@ export default function AdminManagersPage() {
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.message || 'Failed to remove manager');
+        throw new Error((errorData as Record<string, unknown>).message as string || 'Failed to remove manager');
       }
 
       // Refresh managers list
       fetchManagers();
-    } catch (err: any) {
-      setError(err.message || 'Failed to remove manager');
+    } catch (err: Error | unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to remove manager';
+      setError(errorMessage || 'Failed to remove manager');
     } finally {
       setRemoving(null);
     }
@@ -214,7 +217,7 @@ export default function AdminManagersPage() {
   const handleUpdateManagerStations = async (managerId: string) => {
     try {
       setUpdatingStations(managerId);
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+      const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000';
       const baseUrl = apiUrl.replace(/\/api$/, '');
       const token = localStorage.getItem('adminToken') || localStorage.getItem('managerToken');
 
@@ -231,15 +234,16 @@ export default function AdminManagersPage() {
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.message || 'Failed to update manager stations');
+        throw new Error((errorData as Record<string, unknown>).message as string || 'Failed to update manager stations');
       }
 
       // Refresh managers list
       fetchManagers();
       setEditingStations(null);
       setManagerStations({});
-    } catch (err: any) {
-      setError(err.message || 'Failed to update manager stations');
+    } catch (err: Error | unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to update manager stations';
+      setError(errorMessage || 'Failed to update manager stations');
     } finally {
       setUpdatingStations(null);
     }

@@ -7,13 +7,14 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "export": "next export",
     "lint": "eslint \"src/**/*.{ts,tsx}\" --fix",
     "format": "prettier --write \"src/**/*.{ts,tsx}\"",
     "type-check": "tsc --noEmit",
     "test": "jest --passWithNoTests",
     "test:watch": "jest --watch",
-    "test:cov": "jest --coverage"
+    "test:cov": "jest --coverage",
+    "deploy:s3": "npm run build && aws s3 sync .next/static s3://aramco-reviews-frontend/static --acl public-read && aws s3 sync out/ s3://aramco-reviews-frontend/ --acl public-read",
+    "deploy:s3:standalone": "npm run build && aws s3 sync .next/standalone s3://aramco-reviews-frontend/ --acl public-read"
   },
   "dependencies": {
     "autoprefixer": "^10.4.15",

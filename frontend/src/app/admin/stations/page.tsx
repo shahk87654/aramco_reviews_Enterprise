@@ -54,7 +54,7 @@ export default function AdminStationsPage() {
   const fetchStations = async () => {
     try {
       setLoading(true);
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+      const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000';
       const baseUrl = apiUrl.replace(/\/api$/, '');
       
       const response = await fetch(`${baseUrl}/api/stations`, {
@@ -102,8 +102,8 @@ export default function AdminStationsPage() {
       );
 
       setStations(stationsWithStats);
-    } catch (err: any) {
-      setError(err.message || 'Failed to fetch stations');
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Failed to fetch stations');
       console.error('Error fetching stations:', err);
     } finally {
       setLoading(false);
@@ -117,7 +117,7 @@ export default function AdminStationsPage() {
     setSuccess('');
 
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+      const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000';
       const baseUrl = apiUrl.replace(/\/api$/, '');
       const token = localStorage.getItem('adminToken') || localStorage.getItem('managerToken');
 
@@ -139,8 +139,8 @@ export default function AdminStationsPage() {
       setNewStation({ name: '', stationCode: '', city: '', address: '', contact: '' });
       setShowAddModal(false);
       fetchStations();
-    } catch (err: any) {
-      setError(err.message || 'Failed to add station');
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Failed to add station');
     } finally {
       setSubmitting(false);
     }
@@ -151,7 +151,7 @@ export default function AdminStationsPage() {
     setError('');
 
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+      const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000';
       const baseUrl = apiUrl.replace(/\/api$/, '');
       const token = localStorage.getItem('adminToken') || localStorage.getItem('managerToken');
 
@@ -169,8 +169,8 @@ export default function AdminStationsPage() {
       setSuccess('Station removed successfully!');
       setDeleteConfirm(null);
       fetchStations();
-    } catch (err: any) {
-      setError(err.message || 'Failed to delete station');
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Failed to delete station');
     } finally {
       setSubmitting(false);
     }
