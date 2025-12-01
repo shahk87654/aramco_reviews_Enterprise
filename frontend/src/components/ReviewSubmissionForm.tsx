@@ -77,7 +77,7 @@ export default function ReviewSubmissionForm({ stationId }: { stationId: string 
     setLoading(true);
 
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+      const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000';
       const baseUrl = apiUrl.replace(/\/api$/, '');
       const token = localStorage.getItem('accessToken');
       

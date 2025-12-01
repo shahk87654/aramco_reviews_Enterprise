@@ -39,7 +39,7 @@ export default function RewardQRCode({
   const handleClaim = async () => {
     try {
       setClaiming(true);
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+      const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000';
       const baseUrl = apiUrl.replace(/\/api$/, '');
 
       const response = await fetch(`${baseUrl}/api/campaigns/claims/${claimId}/claim`, {

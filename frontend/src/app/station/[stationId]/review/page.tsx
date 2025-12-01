@@ -76,7 +76,7 @@ export default function ReviewFormPage({ params }: ReviewFormPageProps) {
     const fetchStation = async () => {
       try {
         setLoading(true);
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+        const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000';
         const baseUrl = apiUrl.replace(/\/api$/, '');
         
         const response = await fetch(`${baseUrl}/api/stations/${params.stationId}`, {
@@ -175,7 +175,7 @@ export default function ReviewFormPage({ params }: ReviewFormPageProps) {
     setSubmitting(true);
 
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+      const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000';
       const baseUrl = apiUrl.replace(/\/api$/, '');
       const token = localStorage.getItem('accessToken');
 

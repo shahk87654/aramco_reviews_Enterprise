@@ -40,7 +40,7 @@ export default function CouponStats({ stationId }: CouponStatsProps) {
     const fetchCouponData = async () => {
       try {
         setLoading(true);
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+        const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000';
         const baseUrl = apiUrl.replace(/\/api$/, '');
         const token = localStorage.getItem('managerToken') || localStorage.getItem('adminToken');
 
