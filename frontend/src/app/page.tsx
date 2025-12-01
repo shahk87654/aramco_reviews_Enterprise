@@ -20,30 +20,25 @@ export default function HomePage() {
   useEffect(() => {
     const fetchStations = async () => {
       try {
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
-        // Remove /api from apiUrl if present, then add it back to avoid double /api
-        const baseUrl = apiUrl.replace(/\/api$/, '');
-        const response = await fetch(`${baseUrl}/api/stations`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        });
-        
-        if (!response.ok) {
-          const errorText = await response.text();
-          console.error('API Error:', response.status, errorText);
-          throw new Error(`Failed to fetch stations: ${response.status} ${response.statusText}`);
-        }
-        
-        const data = await response.json();
-        // Sort stations by stationCode in ascending order (1, 2, 3...)
-        const sortedStations = data.sort((a: Station, b: Station) => {
-          const codeA = parseInt(a.stationCode.replace(/\D/g, '')) || 0;
-          const codeB = parseInt(b.stationCode.replace(/\D/g, '')) || 0;
-          return codeA - codeB;
-        });
-        setStations(sortedStations);
+        const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000';
+        fetch(`${apiBase}/api/stations`)
+          .then(res => res.json())
+          .then(data => {
+            // Sort stations by stationCode in ascending order (1, 2, 3...)
+            const sortedStations = data.sort((a: Station, b: Station) => {
+              const codeA = parseInt(a.stationCode.replace(/\D/g, '')) || 0;
+              const codeB = parseInt(b.stationCode.replace(/\D/g, '')) || 0;
+              return codeA - codeB;
+            });
+            setStations(sortedStations);
+          })
+          .catch(err => {
+            console.error("Failed to fetch", err);
+            setError('Failed to load stations. Please ensure the backend is running.');
+          })
+          .finally(() => {
+            setLoading(false);
+          });
       } catch (err: any) {
         const errorMessage = err.message || 'Failed to load stations. Please ensure the backend is running on http://localhost:3000';
         setError(errorMessage);

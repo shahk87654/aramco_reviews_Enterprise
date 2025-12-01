@@ -27,7 +27,7 @@ async function bootstrap() {
   // CORS
   app.enableCors({
     origin: function(origin, callback) {
-      const allowedOrigins = (process.env.CORS_ORIGINS || 'http://localhost:3001,http://localhost:3000,https://aramco-reviews-enterprise.vercel.app').split(',');
+      const allowedOrigins = (process.env.CORS_ORIGINS || 'http://localhost:3001,http://localhost:3000,https://unstereotyped-presubsistent-madilynn.ngrok-free.dev').split(',');
       if (!origin || allowedOrigins.indexOf(origin) !== -1 || allowedOrigins.includes('*')) {
         callback(null, true);
       } else {
