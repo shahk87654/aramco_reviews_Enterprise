@@ -14,7 +14,7 @@ const nextConfig = {
     ],
   },
   env: {
-    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || 'http://3.226.97.116:3000/',
+    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || 'https://unstereotyped-presubsistent-madilynn.ngrok-free.dev',
   },
 };
 
