@@ -3,6 +3,7 @@
   "installCommand": "npm install",
   "outputDirectory": ".next",
   "env": {
-    "SKIP_ENV_VALIDATION": "true"
+    "SKIP_ENV_VALIDATION": "true",
+    "NEXT_PUBLIC_API_URL": "https://unstereotyped-presubsistent-madilynn.ngrok-free.dev"
   }
 }
