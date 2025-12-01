@@ -1,21 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  reactStrictMode: true,
-  swcMinify: true,
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
-  images: {
-    remotePatterns: [
-      {
-        protocol: 'https',
-        hostname: '**.amazonaws.com',
-      },
-    ],
-  },
-  env: {
-    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || 'https://unstereotyped-presubsistent-madilynn.ngrok-free.dev',
-  },
+  output: 'export', // enables static HTML export
+  // Optional: set base path if needed
+  // basePath: '',
 };
 
 module.exports = nextConfig;

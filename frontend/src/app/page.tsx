@@ -39,8 +39,8 @@ export default function HomePage() {
           .finally(() => {
             setLoading(false);
           });
-      } catch (err: any) {
-        const errorMessage = err.message || 'Failed to load stations. Please ensure the backend is running on http://localhost:3000';
+      } catch (err: unknown) {
+        const errorMessage = err instanceof Error ? err.message : 'Failed to load stations. Please ensure the backend is running on http://localhost:3000';
         setError(errorMessage);
         console.error('Error fetching stations:', err);
       } finally {
