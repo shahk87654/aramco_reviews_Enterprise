@@ -1,0 +1,2 @@
+- [x] Move all root .md files except README.md to docs/ folder
+- [x] Update links in README.md to point to docs/
